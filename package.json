@@ -13,7 +13,12 @@
   "type": "module",
   "scripts": {
     "compile": "tsc",
+    "lint": "eslint ./src --ext=.ts",
     "exec": "node .",
     "start": "yarn run compile && yarn run exec"
+  },
+  "devDependencies": {
+    "@sapphire/eslint-config": "^3.2.3",
+    "eslint": "^7.32.0"
   }
 }
