@@ -33,6 +33,8 @@ client.on("message", async (msg) => {
     const options = {
       create: ["create", "+", "add"],
       remove: ["remove", "-", "delete"],
+      edit: ["edit"],
+      list: ["list", "l"],
     };
     const option = args.shift()?.toLowerCase() ?? "";
 
@@ -105,6 +107,43 @@ client.on("message", async (msg) => {
         .catch(() => {
           return msg.room.send(`An error occurred while deleting tag: \`${tag}\``);
         });
+    }
+
+    if (options.list.includes(option)) {
+      const query = await prisma.tags.findMany({
+        where: {
+          house: msg.house.id,
+        },
+        orderBy: {
+          tag: "asc",
+        },
+      });
+
+      if (query.length === 0) return msg.room.send("This house doesn't have any tags.");
+
+      let i = 0;
+      let ii = 0;
+      const tags: string[][] = [[]];
+
+      for (const { tag } of query) {
+        if (ii > 250) {
+          i++;
+          tags.push([]);
+          ii = 0;
+        }
+
+        tags[i].push(tag);
+        ii += tag.length;
+      }
+
+      try {
+        return tags.forEach((t) => {
+          void msg.room.send(t.map(tt => `\`${tt}\``).join(" "));
+        });
+      } catch (e) {
+        console.log(e);
+        return msg.room.send("An error occurred while sending a list of the tags.");
+      }
     }
 
     return msg.room.send("Use `?help` to see the correct usage.");
