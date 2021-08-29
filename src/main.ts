@@ -21,11 +21,13 @@ client.on("message", async (msg) => {
   if (!msg.content.startsWith(prefix) || msg.author?.id === client.user?.id) return;
   const args = msg.content.slice(prefix.length).trim().split(' ');
   const command = args.shift()?.toLowerCase() ?? null;
+  if (!command) return;
 
   if (command === "ping") return msg.room.send("Pong!");
 
+  if (!msg.house) return msg.room.send("You can't use this command in DM's.");
+
   if (command === "tag") {
-    if (!msg.house) return msg.room.send("You can't use this command in DM's.");
     if (msg.house.owner?.id !== msg.author?.id) return msg.room.send("This command can only be used by House Owner.");
 
     const options = {
@@ -70,6 +72,22 @@ client.on("message", async (msg) => {
         });
     }
   }
+
+  if (cache.has(`${msg.house.id}.${command}`)) {
+    return msg.room.send(cache.get(`${msg.house.id}.${command}`));
+  }
+
+  const query = await prisma.tags.findUnique({
+    where: {
+      house_tag: {
+        house: msg.house.id,
+        tag: command,
+      },
+    },
+  });
+
+  if (!query) return;
+  return msg.room.send(query.content);
 });
 
 client.connect(process.env.TOKEN ?? "")
