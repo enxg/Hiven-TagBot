@@ -34,7 +34,7 @@ client.on("message", async (msg) => {
       create: ["create", "+", "add"],
       remove: ["remove", "-", "delete"],
     };
-    const option = args.shift()?.toLowerCase() ?? "help";
+    const option = args.shift()?.toLowerCase() ?? "";
 
     if (options.create.includes(option)) {
       const tag = args.shift()?.toLowerCase();
@@ -71,6 +71,43 @@ client.on("message", async (msg) => {
           return msg.room.send(`An error occurred while creating tag: \`${tag}\``);
         });
     }
+
+    if (options.remove.includes(option)) {
+      const tag = args.shift()?.toLowerCase();
+
+      if (!tag) return msg.room.send(`Example Usage: \`?tag ${option} hi\``);
+      const tagDoesntExist = () => {
+        return msg.room.send(`A tag with the name \`${tag}\` doesn't exist.`);
+      };
+
+      const query = await prisma.tags.findUnique({
+        where: {
+          house_tag: {
+            house: msg.house.id,
+            tag,
+          },
+        },
+      });
+      if (!query) return tagDoesntExist();
+
+      return prisma.tags.delete({
+        where: {
+          house_tag: {
+            house: msg.house.id,
+            tag,
+          },
+        },
+      })
+        .then(() => {
+          cache.delete(`${msg.house.id}.${tag}`);
+          return msg.room.send(`Successfully deleted tag: \`${tag}\``);
+        })
+        .catch(() => {
+          return msg.room.send(`An error occurred while deleting tag: \`${tag}\``);
+        });
+    }
+
+    return msg.room.send("Use `?help` to see the correct usage.");
   }
 
   if (cache.has(`${msg.house.id}.${command}`)) {
