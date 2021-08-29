@@ -15,7 +15,7 @@
   "scripts": {
     "compile": "tsc",
     "lint": "eslint ./src --ext=.ts",
-    "exec": "node .",
+    "exec": "node --experimental-json-modules .",
     "start": "yarn run compile && yarn run exec"
   },
   "devDependencies": {
