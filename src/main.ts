@@ -1,6 +1,6 @@
 import { Client } from "hiven";
 import { config } from "dotenv-cra";
-import Prisma     from '@prisma/client'
+import Prisma     from '@prisma/client';
 
 const { PrismaClient } = Prisma;
 
@@ -26,13 +26,13 @@ client.on("message", async (msg) => {
 
   if (command === "tag") {
     if (!msg.house) return msg.room.send("You can't use this command in DM's.");
-    if (msg.house.owner?.id !== msg.author?.id) return msg.room.send("This command can only be used by House Owner.")
+    if (msg.house.owner?.id !== msg.author?.id) return msg.room.send("This command can only be used by House Owner.");
 
     const options = {
       create: ["create", "+", "add"],
-      remove: ["remove", "-", "delete"]
+      remove: ["remove", "-", "delete"],
     };
-    const option = args[0];
+    const option = args.shift()?.toLowerCase() ?? "help";
 
     if (options.create.includes(option)) {
       const tag = args.shift()?.toLowerCase();
@@ -41,10 +41,33 @@ client.on("message", async (msg) => {
       if (!tag || !content) return msg.room.send(`Example Usage: \`?tag ${option} hi Hello World!\``);
       const tagExists = () => {
         return msg.room.send("A tag with this name already exists. Use `?tag edit` to edit the tag.");
-      }
+      };
       if (cache.has(`${msg.house.id}.${tag}`)) return tagExists();
 
+      const query = await prisma.tags.findUnique({
+        where: {
+          house_tag: {
+            house: msg.house.id,
+            tag,
+          },
+        },
+      });
+      if (!!query) return tagExists();
 
+      return prisma.tags.create({
+        data: {
+          house: msg.house.id,
+          tag,
+          content,
+        },
+      })
+        .then(() => {
+          cache.set(`${msg.house.id}.${tag}`, content);
+          return msg.room.send(`Successfully created tag: \`${tag}\``);
+        })
+        .catch(() => {
+          return msg.room.send(`An error occurred while creating tag: \`${tag}\``);
+        });
     }
   }
 });
@@ -54,4 +77,4 @@ client.connect(process.env.TOKEN ?? "")
   .catch(() => {
     console.log("Invalid Token!");
     process.exit(1);
-  })
+  });
