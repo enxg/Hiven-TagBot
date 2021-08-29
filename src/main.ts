@@ -1,6 +1,7 @@
-import { Client } from "hiven";
-import { config } from "dotenv-cra";
-import Prisma     from '@prisma/client';
+import { Client }   from "hiven";
+import { config }   from "dotenv-cra";
+import { DateTime } from "luxon";
+import Prisma       from '@prisma/client';
 
 const { PrismaClient } = Prisma;
 
@@ -34,6 +35,7 @@ client.on("message", async (msg) => {
       create: ["create", "+", "add"],
       remove: ["remove", "-", "delete"],
       edit: ["edit"],
+      info: ["info"],
       list: ["list", "l"],
     };
     const option = args.shift()?.toLowerCase() ?? "";
@@ -147,6 +149,35 @@ client.on("message", async (msg) => {
         .catch(() => {
           return msg.room.send(`An error occurred while editing tag: \`${tag}\``);
         });
+    }
+
+    if (options.info.includes(option)) {
+      const tag = args.shift()?.toLowerCase();
+
+      if (!tag) return msg.room.send(`Example Usage: \`?tag ${option} hi\``);
+      const tagDoesntExist = () => {
+        return msg.room.send(`A tag with the name \`${tag}\` doesn't exist.`);
+      };
+
+      const query = await prisma.tags.findUnique({
+        where: {
+          house_tag: {
+            house: msg.house.id,
+            tag,
+          },
+        },
+      });
+      if (!query) return tagDoesntExist();
+
+      const createdAt = DateTime.fromJSDate(query.createdAt);
+      const updatedAt = DateTime.fromJSDate(query.updatedAt);
+
+      return msg.room.send([
+        `**Tag**: ${tag}`,
+        `**Content**: ${query.content}`,
+        `**Created At**: ${createdAt.toLocaleString(DateTime.DATETIME_FULL)} (${createdAt.toRelative()})`,
+        `**Updated At**: ${updatedAt.toLocaleString(DateTime.DATETIME_FULL)} (${updatedAt.toRelative()})`,
+      ].join("\n"));
     }
 
     if (options.list.includes(option)) {
