@@ -137,6 +137,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@types/luxon@npm:2.0.1"
+  checksum: a726a309abdd98fe36d19800edc2f08b413ab63254bc672cdb67655cb3a2030309791f80e49a7a404827dac06196996032bba7c66996f6938a5f1f33354a5cab
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^16.7.5":
   version: 16.7.5
   resolution: "@types/node@npm:16.7.5"
@@ -906,10 +913,12 @@ __metadata:
   dependencies:
     "@prisma/client": ^2.30.0
     "@sapphire/eslint-config": ^3.2.3
+    "@types/luxon": ^2.0.1
     "@types/node": ^16.7.5
     dotenv-cra: ^3.0.1
     eslint: ^7.32.0
     hiven: ^2.0.11
+    luxon: ^2.0.2
   languageName: unknown
   linkType: soft
 
@@ -1087,6 +1096,13 @@ __metadata:
   dependencies:
     yallist: ^4.0.0
   checksum: f97f499f898f23e4585742138a22f22526254fdba6d75d41a1c2526b3b6cc5747ef59c5612ba7375f42aca4f8461950e925ba08c991ead0651b4918b7c978297
+  languageName: node
+  linkType: hard
+
+"luxon@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "luxon@npm:2.0.2"
+  checksum: eb2e366cf41a129704ae3213e0aea3e1504390af2a84322a5bbb6a22c92d96c7cb70e58b941a109c5e1bfbed51784d08130278feeee6cdf169940af90a68ded5
   languageName: node
   linkType: hard
 
