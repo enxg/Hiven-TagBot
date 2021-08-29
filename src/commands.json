@@ -1,0 +1,39 @@
+{
+  "commands": [
+    [
+      "?tag [+ | create | add] <tag> <content>",
+      "Creates a tag.",
+      "?tag + hi Hello World!"
+    ],
+    [
+      "?tag [- | delete | remove] <tag>",
+      "Deleted a tag.",
+      "?tag - hi"
+    ],
+    [
+      "?tag edit <tag> <content>",
+      "Edits a tag.",
+      "?tag edit hi Hi World!"
+    ],
+    [
+      "?tag info <tag>",
+      "Shows information about a tag.",
+      "?tag info hi"
+    ],
+    [
+      "?tag list",
+      "Sends a list of the tags.",
+      "?tag list"
+    ],
+    [
+      "?help",
+      "Shows this message.",
+      "?help"
+    ],
+    [
+      "Usage",
+      "Description",
+      "Example\n"
+    ]
+  ]
+}

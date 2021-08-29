@@ -2,6 +2,8 @@ import { Client }   from "hiven";
 import { config }   from "dotenv-cra";
 import { DateTime } from "luxon";
 import Prisma       from '@prisma/client';
+import { table }    from "table";
+import commands     from "./commands.json";
 
 const { PrismaClient } = Prisma;
 
@@ -25,6 +27,15 @@ client.on("message", async (msg) => {
   if (!command) return;
 
   if (command === "ping") return msg.room.send("Pong!");
+
+  if (command === "help") {
+    const helpMenu = commands.commands
+      .reverse()
+      .map(a => `${a[0]} - **${a[1]}** - ${a[2]}`)
+      .join("\n");
+
+    return msg.room.send(`${helpMenu}\n\nYou can access tags anytime by using \`?<tagname>\`, e.g. \`?hi\` `);
+  }
 
   if (!msg.house) return msg.room.send("You can't use this command in DM's.");
 
