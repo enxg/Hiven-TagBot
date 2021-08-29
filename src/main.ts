@@ -21,6 +21,16 @@ client.on("init", () => {
 });
 
 client.on("message", async (msg) => {
+  if (!msg.house && !msg.content.startsWith(prefix) && msg.author?.id !== client.user?.id) {
+    const inv = msg.content.split("/").reverse()[0];
+    return client.houses.Join(inv)
+      .then(() => msg.room.send("Joined your house, cool house btw!"))
+      .catch((e) => {
+        console.log(e);
+        return msg.room.send("Joined your house, cool house btw!"); // Temporary, because of a bug in hiven.js
+      });
+  }
+
   if (!msg.content.startsWith(prefix) || msg.author?.id === client.user?.id) return;
   const args = msg.content.slice(prefix.length).trim().split(' ');
   const command = args.shift()?.toLowerCase() ?? null;
@@ -40,7 +50,7 @@ client.on("message", async (msg) => {
   if (!msg.house) return msg.room.send("You can't use this command in DM's.");
 
   if (command === "tag") {
-    if (msg.house.owner?.id !== msg.author?.id) return msg.room.send("This command can only be used by House Owner.");
+    if (msg.house.owner?.id !== msg.author?.id) return msg.room.send("This command can only be used by the House Owner.");
 
     const options = {
       create: ["create", "+", "add"],
