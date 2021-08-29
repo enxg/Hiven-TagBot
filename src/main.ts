@@ -109,6 +109,46 @@ client.on("message", async (msg) => {
         });
     }
 
+    if (options.edit.includes(option)) {
+      const tag = args.shift()?.toLowerCase();
+      const content = args.join(" ");
+
+      if (!tag || !content) return msg.room.send(`Example Usage: \`?tag ${option} hi Hi World!\``);
+      const tagDoesntExist = () => {
+        return msg.room.send(`A tag with the name \`${tag}\` doesn't exist.`);
+      };
+
+      const query = await prisma.tags.findUnique({
+        where: {
+          house_tag: {
+            house: msg.house.id,
+            tag,
+          },
+        },
+      });
+      if (!query) return tagDoesntExist();
+
+      return prisma.tags.update({
+        where: {
+          house_tag: {
+            house: msg.house.id,
+            tag,
+          },
+        },
+        data: {
+          tag,
+          content,
+        },
+      })
+        .then(() => {
+          cache.set(`${msg.house.id}.${tag}`, content);
+          return msg.room.send(`Successfully edited tag: \`${tag}\``);
+        })
+        .catch(() => {
+          return msg.room.send(`An error occurred while editing tag: \`${tag}\``);
+        });
+    }
+
     if (options.list.includes(option)) {
       const query = await prisma.tags.findMany({
         where: {
