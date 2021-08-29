@@ -1,0 +1,19 @@
+{
+  "name": "hiven-tagbot",
+  "version": "1.0.0",
+  "main": "dist/main.js",
+  "license": "MIT",
+  "repository": "https://github.com/RedS-DEV/Hiven-TagBot",
+  "dependencies": {
+    "@prisma/client": "^2.30.0",
+    "@types/node": "^16.7.5",
+    "dotenv-cra": "^3.0.1",
+    "hiven": "^2.0.11"
+  },
+  "type": "module",
+  "scripts": {
+    "compile": "tsc",
+    "exec": "node .",
+    "start": "yarn run compile && yarn run exec"
+  }
+}
