@@ -1,6 +1,6 @@
 {
   "name": "hiven-tagbot",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "main": "dist/main.js",
   "license": "MIT",
   "repository": "https://github.com/RedS-DEV/Hiven-TagBot",
