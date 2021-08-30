@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/RedS-DEV/Hiven-TagBot/compare/v1.3.0...v1.3.1) (2021-08-30)
+
+
+### Bug Fixes
+
+* Bot will not crash anymore if it doesn't have required permissions. ([0ec800c](https://github.com/RedS-DEV/Hiven-TagBot/commit/0ec800c075efb03efdbec98d14028cb123c49937))
+* Info and List commands don't require House Ownership anymore. ([7c40a31](https://github.com/RedS-DEV/Hiven-TagBot/commit/7c40a31cb9cffc27afe3b9e1508d0d57c8955abb))
+
 ## 1.3.0 (2021-08-30)
 
 
