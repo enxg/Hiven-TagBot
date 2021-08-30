@@ -259,7 +259,8 @@ client.on("message", async (msg) => {
 
   if (!query) return;
   cache.set(`${msg.house.id}.${command}`, query.content);
-  return msg.room.send(query.content);
+  return msg.room.send(query.content)
+    .catch(null);
 });
 
 client.connect(process.env.TOKEN ?? "")
