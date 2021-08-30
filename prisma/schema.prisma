@@ -17,7 +17,7 @@ model tags {
   updatedAt DateTime @updatedAt
   house     String   @db.VarChar(32)
   tag       String   @db.VarChar(255)
-  content   String   @db.VarChar(500)
+  content   String   @db.VarChar(1500)
 
   @@unique([house, tag])
 }

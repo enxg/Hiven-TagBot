@@ -66,6 +66,7 @@ client.on("message", async (msg) => {
       const content = args.join(" ");
 
       if (!tag || !content) return msg.room.send(`Example Usage: \`?tag ${option} hi Hello World!\``);
+      if (content.length > 1500) return msg.room.send("Tag content can't be more than 1500 characters.");
       const tagExists = () => {
         return msg.room.send("A tag with this name already exists. Use `?tag edit` to edit the tag.");
       };
@@ -137,6 +138,7 @@ client.on("message", async (msg) => {
       const content = args.join(" ");
 
       if (!tag || !content) return msg.room.send(`Example Usage: \`?tag ${option} hi Hi World!\``);
+      if (content.length > 1500) return msg.room.send("Tag content can't be more than 1500 characters.");
       const tagDoesntExist = () => {
         return msg.room.send(`A tag with the name \`${tag}\` doesn't exist.`);
       };
