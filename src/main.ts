@@ -50,7 +50,6 @@ client.on("message", async (msg) => {
   if (!msg.house) return msg.room.send("You can't use this command in DM's.");
 
   if (command === "tag") {
-    if (msg.house.owner?.id !== msg.author?.id) return msg.room.send("This command can only be used by the House Owner.");
 
     const options = {
       create: ["create", "+", "add"],
@@ -60,6 +59,74 @@ client.on("message", async (msg) => {
       list: ["list", "l"],
     };
     const option = args.shift()?.toLowerCase() ?? "";
+
+    if (options.info.includes(option)) {
+      const tag = args.shift()?.toLowerCase();
+
+      if (!tag) return msg.room.send(`Example Usage: \`?tag ${option} hi\``);
+      const tagDoesntExist = () => {
+        return msg.room.send(`A tag with the name \`${tag}\` doesn't exist.`);
+      };
+
+      const query = await prisma.tags.findUnique({
+        where: {
+          house_tag: {
+            house: msg.house.id,
+            tag,
+          },
+        },
+      });
+      if (!query) return tagDoesntExist();
+
+      const createdAt = DateTime.fromJSDate(query.createdAt);
+      const updatedAt = DateTime.fromJSDate(query.updatedAt);
+
+      return msg.room.send([
+        `**Tag**: ${tag}`,
+        `**Content**: ${query.content}`,
+        `**Created At**: ${createdAt.toLocaleString(DateTime.DATETIME_FULL)} (${createdAt.toRelative()})`,
+        `**Updated At**: ${updatedAt.toLocaleString(DateTime.DATETIME_FULL)} (${updatedAt.toRelative()})`,
+      ].join("\n"));
+    }
+
+    if (options.list.includes(option)) {
+      const query = await prisma.tags.findMany({
+        where: {
+          house: msg.house.id,
+        },
+        orderBy: {
+          tag: "asc",
+        },
+      });
+
+      if (query.length === 0) return msg.room.send("This house doesn't have any tags.");
+
+      let i = 0;
+      let ii = 0;
+      const tags: string[][] = [[]];
+
+      for (const { tag } of query) {
+        if (ii > 250) {
+          i++;
+          tags.push([]);
+          ii = 0;
+        }
+
+        tags[i].push(tag);
+        ii += tag.length;
+      }
+
+      try {
+        return tags.forEach((t) => {
+          void msg.room.send(t.map(tt => `\`${tt}\``).join(" "));
+        });
+      } catch (e) {
+        console.log(e);
+        return msg.room.send("An error occurred while sending a list of the tags.");
+      }
+    }
+
+    if (msg.house.owner?.id !== msg.author?.id) return msg.room.send("This command can only be used by the House Owner.");
 
     if (options.create.includes(option)) {
       const tag = args.shift()?.toLowerCase();
@@ -172,72 +239,6 @@ client.on("message", async (msg) => {
         .catch(() => {
           return msg.room.send(`An error occurred while editing tag: \`${tag}\``);
         });
-    }
-
-    if (options.info.includes(option)) {
-      const tag = args.shift()?.toLowerCase();
-
-      if (!tag) return msg.room.send(`Example Usage: \`?tag ${option} hi\``);
-      const tagDoesntExist = () => {
-        return msg.room.send(`A tag with the name \`${tag}\` doesn't exist.`);
-      };
-
-      const query = await prisma.tags.findUnique({
-        where: {
-          house_tag: {
-            house: msg.house.id,
-            tag,
-          },
-        },
-      });
-      if (!query) return tagDoesntExist();
-
-      const createdAt = DateTime.fromJSDate(query.createdAt);
-      const updatedAt = DateTime.fromJSDate(query.updatedAt);
-
-      return msg.room.send([
-        `**Tag**: ${tag}`,
-        `**Content**: ${query.content}`,
-        `**Created At**: ${createdAt.toLocaleString(DateTime.DATETIME_FULL)} (${createdAt.toRelative()})`,
-        `**Updated At**: ${updatedAt.toLocaleString(DateTime.DATETIME_FULL)} (${updatedAt.toRelative()})`,
-      ].join("\n"));
-    }
-
-    if (options.list.includes(option)) {
-      const query = await prisma.tags.findMany({
-        where: {
-          house: msg.house.id,
-        },
-        orderBy: {
-          tag: "asc",
-        },
-      });
-
-      if (query.length === 0) return msg.room.send("This house doesn't have any tags.");
-
-      let i = 0;
-      let ii = 0;
-      const tags: string[][] = [[]];
-
-      for (const { tag } of query) {
-        if (ii > 250) {
-          i++;
-          tags.push([]);
-          ii = 0;
-        }
-
-        tags[i].push(tag);
-        ii += tag.length;
-      }
-
-      try {
-        return tags.forEach((t) => {
-          void msg.room.send(t.map(tt => `\`${tt}\``).join(" "));
-        });
-      } catch (e) {
-        console.log(e);
-        return msg.room.send("An error occurred while sending a list of the tags.");
-      }
     }
 
     return msg.room.send("Use `?help` to see the correct usage.");
